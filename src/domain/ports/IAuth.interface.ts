@@ -7,6 +7,11 @@ export type AuthTokenPayload = {
   is_active: boolean;
 };
 
+export type VerifiedAccessToken = {
+  payload: AuthTokenPayload;
+  expiresAt: number;
+};
+
 export type PasswordResetTokenPayload = {
   sub: string;
   email: string;
@@ -31,4 +36,5 @@ export interface IAuth {
   verifyPasswordResetToken(token: string): Promise<PasswordResetTokenPayload>;
   generateEmailConfirmationToken(email: string): Promise<string>;
   verifyEmailConfirmationToken(token: string): Promise<EmailConfirmationTokenPayload>;
+  verifyAccessToken(token: string): Promise<VerifiedAccessToken>;
 }

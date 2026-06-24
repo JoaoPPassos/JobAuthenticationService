@@ -5,10 +5,11 @@ import { Repository } from 'typeorm';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { User } from '@domain/entities/User.entity';
 import {
-  AuthTokenPayload,
-  EmailConfirmationTokenPayload,
+  type AuthTokenPayload,
+  type EmailConfirmationTokenPayload,
   IAuth,
-  PasswordResetTokenPayload,
+  type PasswordResetTokenPayload,
+  type VerifiedAccessToken,
 } from '@domain/ports/IAuth.interface';
 import 'dotenv/config';
 
@@ -164,6 +165,36 @@ export class AuthRepository implements IAuth {
       return { email: payload.email };
     } catch {
       throw new UnauthorizedException('Invalid or expired confirmation token');
+    }
+  }
+
+  async verifyAccessToken(token: string): Promise<VerifiedAccessToken> {
+    try {
+      const payload = await this.jwtService.verifyAsync<Record<string, unknown>>(token, {
+        secret: process.env.HASH_TOKEN,
+      });
+
+      if (
+        typeof payload.id !== 'string' ||
+        typeof payload.email !== 'string' ||
+        typeof payload.name !== 'string' ||
+        typeof payload.is_active !== 'boolean' ||
+        typeof payload.exp !== 'number'
+      ) {
+        throw new UnauthorizedException('Invalid access token payload');
+      }
+
+      return {
+        payload: {
+          id: payload.id,
+          email: payload.email,
+          name: payload.name,
+          is_active: payload.is_active,
+        },
+        expiresAt: payload.exp,
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid or expired access token');
     }
   }
 }

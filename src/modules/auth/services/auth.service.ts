@@ -6,9 +6,14 @@ import { ValidateResetCodeUseCase } from '@domain/use-cases/auth/validate-reset-
 import { ResetPasswordUseCase } from '@domain/use-cases/auth/reset-password.use-case';
 import { ActiveUserUseCase } from '@domain/use-cases/auth/active-user.use-case';
 import { RefreshTokenUseCase } from '@domain/use-cases/auth/refresh-token.use-case';
+import {
+  ValidateTokenUseCase,
+  type ValidatedToken,
+} from '@domain/use-cases/auth/validate-token.use-case';
 import { AuthRepository } from '@infrastructure/repositories/auth.repository';
 import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
+import { TokenCacheRepository } from '@infrastructure/repositories/token-cache.repository';
 import { EmailPublisher } from '@infrastructure/messaging/email.publisher';
 import { AuthLogin, AuthTokens } from '@module/auth/types/AuthLogin.type';
 import { User } from '@domain/entities/User.entity';
@@ -20,6 +25,7 @@ export class AuthService {
     private hashRepository: HashRepository,
     private emailRepository: MailRepository,
     private emailPublisher: EmailPublisher,
+    private tokenCacheRepository: TokenCacheRepository,
   ) {}
 
   async signUp(data: { name: string; email: string; password: string }): Promise<User> {
@@ -83,5 +89,10 @@ export class AuthService {
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {
     const useCase = new ResetPasswordUseCase(this.authRepository, this.hashRepository);
     return useCase.execute(resetToken, newPassword);
+  }
+
+  async validateToken(token: string): Promise<ValidatedToken> {
+    const useCase = new ValidateTokenUseCase(this.authRepository, this.tokenCacheRepository);
+    return useCase.execute(token);
   }
 }

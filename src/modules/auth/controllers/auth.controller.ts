@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
   Query,
   Redirect,
 } from '@nestjs/common';
+import { UnauthorizedException } from '@shared/exceptions/exceptions';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { CreateUserDTO } from '../dto/create-user.dto';
@@ -17,6 +19,7 @@ import { ValidateResetCodeDTO } from '../dto/validate-reset-code.dto';
 import { ResetPasswordDTO } from '../dto/reset-password.dto';
 import { SuccessResponse } from '@shared/response/success.response';
 import { AuthLogin, AuthTokens } from '@module/auth/types/AuthLogin.type';
+import { type ValidatedToken } from '@domain/use-cases/auth/validate-token.use-case';
 import { User } from '@domain/entities/User.entity';
 
 @ApiTags('auth')
@@ -103,5 +106,21 @@ export class AuthController {
   async resetPassword(@Body() body: ResetPasswordDTO): Promise<SuccessResponse<null>> {
     await this.authService.resetPassword(body.reset_token, body.new_password);
     return new SuccessResponse<null>(null, 200, 'Password reset successfully');
+  }
+
+  @ApiOperation({ summary: 'Validate JWT access token and cache result in Redis' })
+  @ApiResponse({ status: 200, description: 'Token is valid — returns token and user payload' })
+  @ApiResponse({ status: 401, description: 'Token missing, invalid, or expired' })
+  @HttpCode(HttpStatus.OK)
+  @Post('validate-token')
+  async validateToken(
+    @Headers('authorization') authorization: string,
+  ): Promise<SuccessResponse<ValidatedToken>> {
+    if (!authorization?.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Authorization header with Bearer token is required');
+    }
+    const token = authorization.slice(7).trim();
+    const result = await this.authService.validateToken(token);
+    return new SuccessResponse<ValidatedToken>(result, 200, 'Token is valid');
   }
 }
