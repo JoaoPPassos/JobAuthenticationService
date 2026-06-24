@@ -56,6 +56,11 @@ Default to surfacing uncertainty, not hiding it.
 
 ---
 
+## typescript specifics
+
+1- Can't have 'any' as type on the entire project
+---
+
 
 ## Architecture
 
