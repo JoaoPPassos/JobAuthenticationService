@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '@modules/auth/auth.module';
+import { UsersModule } from '@modules/users/users.module';
 import { RabbitmqModule } from '@infrastructure/messaging/rabbitmq.module';
 import configuration from '@config/configuration';
 
@@ -11,6 +12,7 @@ import configuration from '@config/configuration';
     TypeOrmModule.forRoot({ ...configuration }),
     RabbitmqModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
