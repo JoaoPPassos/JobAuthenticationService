@@ -1,0 +1,63 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/joaoppassos/job-authentication-service:latest
+
+      - name: Deploy to Hostinger
+        uses: hostinger/deploy-on-vps@v2
+        with:
+          api-key: ${{ secrets.HOSTINGER_API_KEY }}
+          virtual-machine: ${{ vars.HOSTINGER_VM_ID }}
+          project-name: job-authentication-service
+          personal-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          docker-compose-path: docker-compose.yml
+          environment-variables: |
+            NODE_ENV=production
+            PORT=${{ vars.PORT }}
+            APP_NAME=${{ vars.APP_NAME }}
+            APP_URL=${{ vars.APP_URL }}
+            LOGIN_URL=${{ vars.LOGIN_URL }}
+
+            DATABASE_HOST=${{ vars.DATABASE_HOST }}
+            DATABASE_PORT=${{ vars.DATABASE_PORT }}
+            DATABASE_USER=${{ secrets.DATABASE_USER }}
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_NAME=${{ vars.DATABASE_NAME }}
+
+            HASH_TOKEN=${{ secrets.HASH_TOKEN }}
+            HASH_REFRESH_TOKEN=${{ secrets.HASH_REFRESH_TOKEN }}
+            EXPIRES_ACCESS_TOKEN=${{ vars.EXPIRES_ACCESS_TOKEN }}
+            EXPIRES_REFRESH_TOKEN=${{ vars.EXPIRES_REFRESH_TOKEN }}
+
+            RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}
+
+            REDIS_HOST=redis
+            REDIS_PORT=6379
+            REDIS_HOST_PORT=${{ vars.REDIS_HOST_PORT }}
+
+            EMAIL_ENCRYPTION_KEY=${{ secrets.EMAIL_ENCRYPTION_KEY }}
