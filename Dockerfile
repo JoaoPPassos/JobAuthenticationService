@@ -2,7 +2,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
+RUN apk upgrade --no-cache && apk add --no-cache python3 make g++
 
 COPY package.json ./
 RUN npm pkg delete scripts.prepare && npm install
@@ -24,6 +24,7 @@ RUN apk add --no-cache python3 make g++ && \
     apk del python3 make g++
 
 COPY --from=builder /app/dist ./dist
+COPY src/infrastructure/templates ./dist/infrastructure/templates
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh
 
