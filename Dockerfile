@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package.json ./
-RUN HUSKY=0 npm install
+RUN npm pkg delete scripts.prepare && npm install
 
 COPY . .
 RUN npm run build && test -f dist/src/main.js || (echo "ERROR: dist/src/main.js not found after build" && exit 1)
@@ -19,7 +19,8 @@ WORKDIR /app
 
 COPY package.json ./
 RUN apk add --no-cache python3 make g++ && \
-    HUSKY=0 npm install --omit=dev && \
+    npm pkg delete scripts.prepare && \
+    npm install --omit=dev && \
     apk del python3 make g++
 
 COPY --from=builder /app/dist ./dist
