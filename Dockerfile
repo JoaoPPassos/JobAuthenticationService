@@ -1,26 +1,25 @@
 FROM node:22-alpine AS builder
+
 WORKDIR /app
 
-RUN npm install -g pnpm@10
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json ./
+RUN npm install
 
 COPY . .
-RUN pnpm run build
+RUN npm run build && test -f dist/main.js || (echo "ERROR: dist/main.js not found after build" && exit 1)
+
 
 FROM node:22-alpine AS production
+
+RUN apk upgrade --no-cache
+
 WORKDIR /app
 
-RUN npm install -g pnpm@10
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+COPY package.json ./
+RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-ARG PORT=3000
-ENV PORT=${PORT}
-EXPOSE ${PORT}
+EXPOSE 4000
 
 CMD ["node", "dist/main"]

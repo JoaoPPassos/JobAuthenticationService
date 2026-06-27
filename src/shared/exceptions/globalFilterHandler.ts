@@ -5,6 +5,7 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 import { ExceptionMapper } from './exceptionMapper';
 import { BaseException } from './baseException';
@@ -15,7 +16,7 @@ export class GlobalExceptionFilterHandler implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<{ method: string; url: string }>();
 
     let status: number;

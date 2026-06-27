@@ -8,7 +8,8 @@ export function Match(property: string, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'match',
-      target: (object as { constructor: Function }).constructor,
+      target: (object as { constructor: new (...args: unknown[]) => unknown })
+        .constructor,
       propertyName,
       constraints: [property],
       options: validationOptions,
