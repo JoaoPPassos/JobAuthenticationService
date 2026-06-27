@@ -19,7 +19,10 @@ export class ValidateResetCodeUseCase {
       throw new BadRequestException('Reset code has expired');
     }
 
-    const isValid = await this.hashService.compare(code, user.reset_password_code);
+    const isValid = await this.hashService.compare(
+      code,
+      user.reset_password_code,
+    );
 
     if (!isValid) {
       throw new BadRequestException('Invalid reset code');

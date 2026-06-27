@@ -1,7 +1,10 @@
 import type { IAuth } from '@domain/ports/IAuth.interface';
 import type { IHashService } from '@domain/ports/IHashService.interface';
 import type { IUsersRepository } from '@domain/ports/IUsersRepository.interface';
-import { BadRequestException, ForbiddenException } from '@shared/exceptions/exceptions';
+import {
+  BadRequestException,
+  ForbiddenException,
+} from '@shared/exceptions/exceptions';
 
 export class ChangePasswordUseCase {
   constructor(
@@ -10,7 +13,12 @@ export class ChangePasswordUseCase {
     private readonly hashService: IHashService,
   ) {}
 
-  async execute(requesterId: string, targetUserId: string, code: string, newPassword: string): Promise<void> {
+  async execute(
+    requesterId: string,
+    targetUserId: string,
+    code: string,
+    newPassword: string,
+  ): Promise<void> {
     if (requesterId !== targetUserId) {
       throw new ForbiddenException('You can only change your own password');
     }
@@ -18,14 +26,19 @@ export class ChangePasswordUseCase {
     const user = await this.usersRepo.findById(targetUserId);
 
     if (!user.reset_password_code || !user.reset_password_expires_at) {
-      throw new BadRequestException('No password change request found. Request a code first');
+      throw new BadRequestException(
+        'No password change request found. Request a code first',
+      );
     }
 
     if (new Date() > user.reset_password_expires_at) {
       throw new BadRequestException('Code has expired');
     }
 
-    const isValid = await this.hashService.compare(code, user.reset_password_code);
+    const isValid = await this.hashService.compare(
+      code,
+      user.reset_password_code,
+    );
     if (!isValid) {
       throw new BadRequestException('Invalid code');
     }

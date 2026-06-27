@@ -28,7 +28,8 @@ export class AuthRepository implements IAuth {
   async authenticate(data: object): Promise<string> {
     try {
       const expiresIn =
-        (process.env.EXPIRES_ACCESS_TOKEN as JwtSignOptions['expiresIn']) || '1d';
+        (process.env.EXPIRES_ACCESS_TOKEN as JwtSignOptions['expiresIn']) ||
+        '1d';
       return await this.jwtService.signAsync(data, {
         secret: process.env.HASH_TOKEN,
         expiresIn,
@@ -42,7 +43,8 @@ export class AuthRepository implements IAuth {
   async authenticateRefresh(data: object): Promise<string> {
     try {
       const expiresIn =
-        (process.env.EXPIRES_REFRESH_TOKEN as JwtSignOptions['expiresIn']) || '7d';
+        (process.env.EXPIRES_REFRESH_TOKEN as JwtSignOptions['expiresIn']) ||
+        '7d';
       return await this.jwtService.signAsync(data, {
         secret: this.getRefreshSecret(),
         expiresIn,
@@ -55,7 +57,9 @@ export class AuthRepository implements IAuth {
 
   async verifyRefreshToken(token: string): Promise<AuthTokenPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync<Record<string, unknown>>(token, {
+      const payload = await this.jwtService.verifyAsync<
+        Record<string, unknown>
+      >(token, {
         secret: this.getRefreshSecret(),
       });
 
@@ -79,7 +83,11 @@ export class AuthRepository implements IAuth {
     }
   }
 
-  async save(data: { name: string; email: string; password: string }): Promise<User> {
+  async save(data: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
     return this.userRepository.save(data);
   }
 
@@ -100,7 +108,11 @@ export class AuthRepository implements IAuth {
     return user;
   }
 
-  async saveResetCode(userId: string, hashedCode: string, expiresAt: Date): Promise<void> {
+  async saveResetCode(
+    userId: string,
+    hashedCode: string,
+    expiresAt: Date,
+  ): Promise<void> {
     await this.userRepository.update(userId, {
       reset_password_code: hashedCode,
       reset_password_expires_at: expiresAt,
@@ -118,16 +130,23 @@ export class AuthRepository implements IAuth {
     await this.userRepository.update(userId, { password: hashedPassword });
   }
 
-  async generatePasswordResetToken(userId: string, email: string): Promise<string> {
+  async generatePasswordResetToken(
+    userId: string,
+    email: string,
+  ): Promise<string> {
     return this.jwtService.signAsync(
       { sub: userId, email, type: 'password_reset' },
       { secret: process.env.HASH_TOKEN, expiresIn: '15m' },
     );
   }
 
-  async verifyPasswordResetToken(token: string): Promise<PasswordResetTokenPayload> {
+  async verifyPasswordResetToken(
+    token: string,
+  ): Promise<PasswordResetTokenPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync<Record<string, unknown>>(token, {
+      const payload = await this.jwtService.verifyAsync<
+        Record<string, unknown>
+      >(token, {
         secret: process.env.HASH_TOKEN,
       });
 
@@ -152,13 +171,20 @@ export class AuthRepository implements IAuth {
     );
   }
 
-  async verifyEmailConfirmationToken(token: string): Promise<EmailConfirmationTokenPayload> {
+  async verifyEmailConfirmationToken(
+    token: string,
+  ): Promise<EmailConfirmationTokenPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync<Record<string, unknown>>(token, {
+      const payload = await this.jwtService.verifyAsync<
+        Record<string, unknown>
+      >(token, {
         secret: process.env.HASH_TOKEN,
       });
 
-      if (typeof payload.email !== 'string' || payload.type !== 'email_confirmation') {
+      if (
+        typeof payload.email !== 'string' ||
+        payload.type !== 'email_confirmation'
+      ) {
         throw new UnauthorizedException('Invalid confirmation token');
       }
 
@@ -170,7 +196,9 @@ export class AuthRepository implements IAuth {
 
   async verifyAccessToken(token: string): Promise<VerifiedAccessToken> {
     try {
-      const payload = await this.jwtService.verifyAsync<Record<string, unknown>>(token, {
+      const payload = await this.jwtService.verifyAsync<
+        Record<string, unknown>
+      >(token, {
         secret: process.env.HASH_TOKEN,
       });
 

@@ -4,7 +4,9 @@ import type { AuthTokenPayload } from '@domain/ports/IAuth.interface';
 
 export const CurrentUser = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): AuthTokenPayload => {
-    const request = ctx.switchToHttp().getRequest<Request & { user: AuthTokenPayload }>();
+    const request = ctx
+      .switchToHttp()
+      .getRequest<Request & { user: AuthTokenPayload }>();
     return request.user;
   },
 );

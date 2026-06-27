@@ -12,7 +12,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Job Authentication Service')
-    .setDescription('Auth API — signUp, login, refresh, confirm, password reset')
+    .setDescription(
+      'Auth API — signUp, login, refresh, confirm, password reset',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();

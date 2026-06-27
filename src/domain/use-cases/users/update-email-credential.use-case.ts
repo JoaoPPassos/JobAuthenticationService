@@ -1,4 +1,7 @@
-import type { IEmailCredentialRepository, PublicEmailCredential } from '@domain/ports/IEmailCredentialRepository.interface';
+import type {
+  IEmailCredentialRepository,
+  PublicEmailCredential,
+} from '@domain/ports/IEmailCredentialRepository.interface';
 import type { IEncryptionService } from '@domain/ports/IEncryptionService.interface';
 
 export class UpdateEmailCredentialUseCase {

@@ -18,14 +18,17 @@ export class LoginUserUseCase {
 
     if (user === null) throw new NotFoundException('Usuário não encontrado');
 
-    if (!user.password) throw new BadRequestException('Email ou password errados.');
+    if (!user.password)
+      throw new BadRequestException('Email ou password errados.');
 
     const valid = await this.hashService.compare(data.password, user.password);
 
     if (!valid) throw new BadRequestException('Email ou password errados.');
 
     if (!user.is_active)
-      throw new UnauthorizedException('Conta não confirmada. Verifique seu e-mail.');
+      throw new UnauthorizedException(
+        'Conta não confirmada. Verifique seu e-mail.',
+      );
 
     const tokenPayload: AuthTokenPayload = {
       id: user.id,
@@ -35,7 +38,8 @@ export class LoginUserUseCase {
     };
 
     const accessToken = await this.authRepository.authenticate(tokenPayload);
-    const refreshToken = await this.authRepository.authenticateRefresh(tokenPayload);
+    const refreshToken =
+      await this.authRepository.authenticateRefresh(tokenPayload);
 
     return {
       user: {

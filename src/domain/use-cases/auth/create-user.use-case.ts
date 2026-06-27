@@ -8,7 +8,11 @@ export class CreateUserUseCase {
     private hashService: IHashService,
   ) {}
 
-  async execute(data: { name: string; email: string; password: string }): Promise<User> {
+  async execute(data: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
     const hashedPassword = await this.hashService.hash(data.password);
     return this.userRepository.save({ ...data, password: hashedPassword });
   }

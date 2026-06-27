@@ -14,7 +14,10 @@ export class EncryptionService implements IEncryptionService {
   encrypt(plaintext: string): string {
     const iv = randomBytes(12);
     const cipher = createCipheriv('aes-256-gcm', this.key, iv);
-    const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+    const encrypted = Buffer.concat([
+      cipher.update(plaintext, 'utf8'),
+      cipher.final(),
+    ]);
     const authTag = cipher.getAuthTag();
     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`;
   }

@@ -6,7 +6,9 @@ const STRONG_PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
 export class ResetPasswordDTO {
-  @ApiProperty({ description: 'Token received from verify-reset-code endpoint' })
+  @ApiProperty({
+    description: 'Token received from verify-reset-code endpoint',
+  })
   @IsString()
   @IsNotEmpty()
   reset_token!: string;
@@ -23,6 +25,8 @@ export class ResetPasswordDTO {
   @ApiProperty({ example: 'NewStrongPass123!' })
   @IsString()
   @IsNotEmpty()
-  @Match('new_password', { message: 'confirm_new_password must match new_password' })
+  @Match('new_password', {
+    message: 'confirm_new_password must match new_password',
+  })
   confirm_new_password!: string;
 }

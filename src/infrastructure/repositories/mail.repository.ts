@@ -23,7 +23,9 @@ export class MailRepository implements IEmailTemplateService {
     const templatePath = candidates.find((path) => existsSync(path));
 
     if (!templatePath) {
-      throw new Error(`Email template not found. Checked: ${candidates.join(', ')}`);
+      throw new Error(
+        `Email template not found. Checked: ${candidates.join(', ')}`,
+      );
     }
 
     return templatePath;
@@ -40,7 +42,9 @@ export class MailRepository implements IEmailTemplateService {
     );
   }
 
-  mapAccountConfirmationTemplate(data: AccountConfirmationTemplateData): string {
+  mapAccountConfirmationTemplate(
+    data: AccountConfirmationTemplateData,
+  ): string {
     const appName = data.appName || 'JobHub';
     return this.accountConfirmationTemplate
       .replaceAll('{{APP_NAME}}', appName)

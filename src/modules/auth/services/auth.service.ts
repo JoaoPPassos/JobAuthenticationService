@@ -28,11 +28,19 @@ export class AuthService {
     private tokenCacheRepository: TokenCacheRepository,
   ) {}
 
-  async signUp(data: { name: string; email: string; password: string }): Promise<User> {
-    const useCase = new CreateUserUseCase(this.authRepository, this.hashRepository);
+  async signUp(data: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
+    const useCase = new CreateUserUseCase(
+      this.authRepository,
+      this.hashRepository,
+    );
     const user = await useCase.execute(data);
 
-    const confirmationToken = await this.authRepository.generateEmailConfirmationToken(user.email);
+    const confirmationToken =
+      await this.authRepository.generateEmailConfirmationToken(user.email);
     const baseUrl = process.env.APP_URL || 'http://localhost:3000';
     const confirmationUrl = `${baseUrl}/auth/confirm?token=${confirmationToken}`;
 
@@ -50,7 +58,10 @@ export class AuthService {
   }
 
   async login(data: { email: string; password: string }): Promise<AuthLogin> {
-    const useCase = new LoginUserUseCase(this.authRepository, this.hashRepository);
+    const useCase = new LoginUserUseCase(
+      this.authRepository,
+      this.hashRepository,
+    );
     return useCase.execute(data);
   }
 
@@ -65,7 +76,10 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const useCase = new ForgotPasswordUseCase(this.authRepository, this.hashRepository);
+    const useCase = new ForgotPasswordUseCase(
+      this.authRepository,
+      this.hashRepository,
+    );
     const result = await useCase.execute(email);
 
     if (!result) return;
@@ -82,17 +96,26 @@ export class AuthService {
   }
 
   async verifyResetCode(email: string, code: string): Promise<string> {
-    const useCase = new ValidateResetCodeUseCase(this.authRepository, this.hashRepository);
+    const useCase = new ValidateResetCodeUseCase(
+      this.authRepository,
+      this.hashRepository,
+    );
     return useCase.execute(email, code);
   }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {
-    const useCase = new ResetPasswordUseCase(this.authRepository, this.hashRepository);
+    const useCase = new ResetPasswordUseCase(
+      this.authRepository,
+      this.hashRepository,
+    );
     return useCase.execute(resetToken, newPassword);
   }
 
   async validateToken(token: string): Promise<ValidatedToken> {
-    const useCase = new ValidateTokenUseCase(this.authRepository, this.tokenCacheRepository);
+    const useCase = new ValidateTokenUseCase(
+      this.authRepository,
+      this.tokenCacheRepository,
+    );
     return useCase.execute(token);
   }
 }

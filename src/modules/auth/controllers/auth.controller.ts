@@ -29,12 +29,19 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
-  @ApiResponse({ status: 400, description: 'Validation error or passwords mismatch' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error or passwords mismatch',
+  })
   @ApiResponse({ status: 409, description: 'Email already in use' })
   @Post('signUp')
   async signUp(@Body() body: CreateUserDTO): Promise<SuccessResponse<User>> {
     const response = await this.authService.signUp(body);
-    return new SuccessResponse<User>(response, 201, 'User signed up successfully');
+    return new SuccessResponse<User>(
+      response,
+      201,
+      'User signed up successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Authenticate user and get JWT tokens' })
@@ -42,9 +49,15 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() body: AuthenticateUserDTO): Promise<SuccessResponse<AuthLogin>> {
+  async login(
+    @Body() body: AuthenticateUserDTO,
+  ): Promise<SuccessResponse<AuthLogin>> {
     const response = await this.authService.login(body);
-    return new SuccessResponse<AuthLogin>(response, 200, 'User logged in successfully');
+    return new SuccessResponse<AuthLogin>(
+      response,
+      200,
+      'User logged in successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Refresh access token using refresh token' })
@@ -56,13 +69,23 @@ export class AuthController {
     @Body() body: { refreshToken: string },
   ): Promise<SuccessResponse<AuthTokens>> {
     const response = await this.authService.refreshToken(body.refreshToken);
-    return new SuccessResponse<AuthTokens>(response, 200, 'Token refreshed successfully');
+    return new SuccessResponse<AuthTokens>(
+      response,
+      200,
+      'Token refreshed successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Confirm user account via email link' })
   @ApiQuery({ name: 'token', description: 'Signed confirmation token' })
-  @ApiResponse({ status: 302, description: 'Account confirmed, redirects to login' })
-  @ApiResponse({ status: 401, description: 'Invalid or expired confirmation token' })
+  @ApiResponse({
+    status: 302,
+    description: 'Account confirmed, redirects to login',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired confirmation token',
+  })
   @Get('confirm')
   @Redirect()
   async confirm(@Query('token') token: string): Promise<{ url: string }> {
@@ -73,16 +96,30 @@ export class AuthController {
     return { url: loginUrl };
   }
 
-  @ApiOperation({ summary: 'Request password reset — sends a 6-digit code to the email' })
-  @ApiResponse({ status: 200, description: 'Reset code sent if email is registered' })
+  @ApiOperation({
+    summary: 'Request password reset — sends a 6-digit code to the email',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reset code sent if email is registered',
+  })
   @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
-  async forgotPassword(@Body() body: ForgotPasswordDTO): Promise<SuccessResponse<null>> {
+  async forgotPassword(
+    @Body() body: ForgotPasswordDTO,
+  ): Promise<SuccessResponse<null>> {
     await this.authService.forgotPassword(body.email);
-    return new SuccessResponse<null>(null, 200, 'If this email is registered, a reset code has been sent');
+    return new SuccessResponse<null>(
+      null,
+      200,
+      'If this email is registered, a reset code has been sent',
+    );
   }
 
-  @ApiOperation({ summary: 'Verify the 6-digit reset code — returns a short-lived reset token' })
+  @ApiOperation({
+    summary:
+      'Verify the 6-digit reset code — returns a short-lived reset token',
+  })
   @ApiResponse({ status: 200, description: 'Code valid, reset token returned' })
   @ApiResponse({ status: 400, description: 'Invalid or expired code' })
   @HttpCode(HttpStatus.OK)
@@ -90,7 +127,10 @@ export class AuthController {
   async verifyResetCode(
     @Body() body: ValidateResetCodeDTO,
   ): Promise<SuccessResponse<{ reset_token: string }>> {
-    const reset_token = await this.authService.verifyResetCode(body.email, body.code);
+    const reset_token = await this.authService.verifyResetCode(
+      body.email,
+      body.code,
+    );
     return new SuccessResponse<{ reset_token: string }>(
       { reset_token },
       200,
@@ -98,26 +138,40 @@ export class AuthController {
     );
   }
 
-  @ApiOperation({ summary: 'Reset password using the token from verify-reset-code' })
+  @ApiOperation({
+    summary: 'Reset password using the token from verify-reset-code',
+  })
   @ApiResponse({ status: 200, description: 'Password updated successfully' })
   @ApiResponse({ status: 401, description: 'Invalid or expired reset token' })
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPasswordDTO): Promise<SuccessResponse<null>> {
+  async resetPassword(
+    @Body() body: ResetPasswordDTO,
+  ): Promise<SuccessResponse<null>> {
     await this.authService.resetPassword(body.reset_token, body.new_password);
     return new SuccessResponse<null>(null, 200, 'Password reset successfully');
   }
 
-  @ApiOperation({ summary: 'Validate JWT access token and cache result in Redis' })
-  @ApiResponse({ status: 200, description: 'Token is valid — returns token and user payload' })
-  @ApiResponse({ status: 401, description: 'Token missing, invalid, or expired' })
+  @ApiOperation({
+    summary: 'Validate JWT access token and cache result in Redis',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Token is valid — returns token and user payload',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token missing, invalid, or expired',
+  })
   @HttpCode(HttpStatus.OK)
   @Post('validate-token')
   async validateToken(
     @Headers('authorization') authorization: string,
   ): Promise<SuccessResponse<ValidatedToken>> {
     if (!authorization?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Authorization header with Bearer token is required');
+      throw new UnauthorizedException(
+        'Authorization header with Bearer token is required',
+      );
     }
     const token = authorization.slice(7).trim();
     const result = await this.authService.validateToken(token);

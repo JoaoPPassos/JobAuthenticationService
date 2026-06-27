@@ -6,7 +6,10 @@ const STRONG_PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
 export class ChangePasswordDTO {
-  @ApiProperty({ example: '123456', description: '6-digit code sent to your email' })
+  @ApiProperty({
+    example: '123456',
+    description: '6-digit code sent to your email',
+  })
   @IsString()
   @IsNotEmpty()
   code!: string;
@@ -23,6 +26,8 @@ export class ChangePasswordDTO {
   @ApiProperty({ example: 'NewStrongPass123!' })
   @IsString()
   @IsNotEmpty()
-  @Match('new_password', { message: 'confirm_new_password must match new_password' })
+  @Match('new_password', {
+    message: 'confirm_new_password must match new_password',
+  })
   confirm_new_password!: string;
 }

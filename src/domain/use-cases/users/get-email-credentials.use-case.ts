@@ -1,4 +1,7 @@
-import type { IEmailCredentialRepository, PublicEmailCredential } from '@domain/ports/IEmailCredentialRepository.interface';
+import type {
+  IEmailCredentialRepository,
+  PublicEmailCredential,
+} from '@domain/ports/IEmailCredentialRepository.interface';
 
 export class GetEmailCredentialsUseCase {
   constructor(private readonly credentialsRepo: IEmailCredentialRepository) {}

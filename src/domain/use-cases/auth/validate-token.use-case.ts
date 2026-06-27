@@ -1,4 +1,7 @@
-import { type AuthTokenPayload, type IAuth } from '@domain/ports/IAuth.interface';
+import {
+  type AuthTokenPayload,
+  type IAuth,
+} from '@domain/ports/IAuth.interface';
 import { type ITokenCache } from '@domain/ports/ITokenCache.interface';
 
 const CACHE_PREFIX = 'access_token:';

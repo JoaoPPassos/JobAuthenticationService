@@ -6,7 +6,10 @@ import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
 import { EmailPublisher } from '@infrastructure/messaging/email.publisher';
 import { EncryptionService } from '@infrastructure/services/encryption.service';
-import { GetMeUseCase, type MeResponse } from '@domain/use-cases/users/get-me.use-case';
+import {
+  GetMeUseCase,
+  type MeResponse,
+} from '@domain/use-cases/users/get-me.use-case';
 import { GetEmailCredentialsUseCase } from '@domain/use-cases/users/get-email-credentials.use-case';
 import { CreateEmailCredentialUseCase } from '@domain/use-cases/users/create-email-credential.use-case';
 import { UpdateEmailCredentialUseCase } from '@domain/use-cases/users/update-email-credential.use-case';
@@ -28,7 +31,10 @@ export class UsersService {
   ) {}
 
   async getMe(userId: string): Promise<MeResponse> {
-    const useCase = new GetMeUseCase(this.usersRepository, this.credentialRepository);
+    const useCase = new GetMeUseCase(
+      this.usersRepository,
+      this.credentialRepository,
+    );
     return useCase.execute(userId);
   }
 
@@ -41,7 +47,10 @@ export class UsersService {
     userId: string,
     data: { email: string; password: string },
   ): Promise<PublicEmailCredential> {
-    const useCase = new CreateEmailCredentialUseCase(this.credentialRepository, this.encryptionService);
+    const useCase = new CreateEmailCredentialUseCase(
+      this.credentialRepository,
+      this.encryptionService,
+    );
     return useCase.execute(userId, data);
   }
 
@@ -50,7 +59,10 @@ export class UsersService {
     userId: string,
     data: { email?: string; password?: string },
   ): Promise<PublicEmailCredential> {
-    const useCase = new UpdateEmailCredentialUseCase(this.credentialRepository, this.encryptionService);
+    const useCase = new UpdateEmailCredentialUseCase(
+      this.credentialRepository,
+      this.encryptionService,
+    );
     return useCase.execute(id, userId, data);
   }
 

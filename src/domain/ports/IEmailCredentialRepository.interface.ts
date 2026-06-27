@@ -4,7 +4,11 @@ export type PublicEmailCredential = Omit<EmailCredential, 'password'>;
 
 export interface IEmailCredentialRepository {
   findByUserId(userId: string): Promise<PublicEmailCredential[]>;
-  create(data: { id_user: string; email: string; password: string }): Promise<PublicEmailCredential>;
+  create(data: {
+    id_user: string;
+    email: string;
+    password: string;
+  }): Promise<PublicEmailCredential>;
   update(
     id: string,
     userId: string,

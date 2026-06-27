@@ -8,7 +8,8 @@ export class ResetPasswordUseCase {
   ) {}
 
   async execute(resetToken: string, newPassword: string): Promise<void> {
-    const payload = await this.authRepository.verifyPasswordResetToken(resetToken);
+    const payload =
+      await this.authRepository.verifyPasswordResetToken(resetToken);
     const hashedPassword = await this.hashService.hash(newPassword);
 
     await this.authRepository.updatePassword(payload.sub, hashedPassword);

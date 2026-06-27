@@ -29,12 +29,18 @@ export interface IAuth {
   findByID(id: string): Promise<User>;
   findByEmail(email: string): Promise<User | null>;
   activate(email: string): Promise<User>;
-  saveResetCode(userId: string, hashedCode: string, expiresAt: Date): Promise<void>;
+  saveResetCode(
+    userId: string,
+    hashedCode: string,
+    expiresAt: Date,
+  ): Promise<void>;
   clearResetCode(userId: string): Promise<void>;
   updatePassword(userId: string, hashedPassword: string): Promise<void>;
   generatePasswordResetToken(userId: string, email: string): Promise<string>;
   verifyPasswordResetToken(token: string): Promise<PasswordResetTokenPayload>;
   generateEmailConfirmationToken(email: string): Promise<string>;
-  verifyEmailConfirmationToken(token: string): Promise<EmailConfirmationTokenPayload>;
+  verifyEmailConfirmationToken(
+    token: string,
+  ): Promise<EmailConfirmationTokenPayload>;
   verifyAccessToken(token: string): Promise<VerifiedAccessToken>;
 }

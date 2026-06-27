@@ -21,7 +21,8 @@ export class RefreshTokenUseCase {
     };
 
     const accessToken = await this.authRepository.authenticate(tokenPayload);
-    const nextRefreshToken = await this.authRepository.authenticateRefresh(tokenPayload);
+    const nextRefreshToken =
+      await this.authRepository.authenticateRefresh(tokenPayload);
 
     return { accessToken, refreshToken: nextRefreshToken };
   }

@@ -41,17 +41,27 @@ export class UsersController {
     @CurrentUser() user: AuthTokenPayload,
   ): Promise<SuccessResponse<MeResponse>> {
     const result = await this.usersService.getMe(user.id);
-    return new SuccessResponse<MeResponse>(result, 200, 'User retrieved successfully');
+    return new SuccessResponse<MeResponse>(
+      result,
+      200,
+      'User retrieved successfully',
+    );
   }
 
-  @ApiOperation({ summary: 'List all email credentials for the authenticated user' })
+  @ApiOperation({
+    summary: 'List all email credentials for the authenticated user',
+  })
   @ApiResponse({ status: 200, description: 'Credentials listed' })
   @Get('email-credentials')
   async getEmailCredentials(
     @CurrentUser() user: AuthTokenPayload,
   ): Promise<SuccessResponse<PublicEmailCredential[]>> {
     const result = await this.usersService.getEmailCredentials(user.id);
-    return new SuccessResponse<PublicEmailCredential[]>(result, 200, 'Credentials retrieved successfully');
+    return new SuccessResponse<PublicEmailCredential[]>(
+      result,
+      200,
+      'Credentials retrieved successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Add an email credential for monitoring' })
@@ -62,7 +72,11 @@ export class UsersController {
     @Body() body: CreateEmailCredentialDTO,
   ): Promise<SuccessResponse<PublicEmailCredential>> {
     const result = await this.usersService.createEmailCredential(user.id, body);
-    return new SuccessResponse<PublicEmailCredential>(result, 201, 'Credential created successfully');
+    return new SuccessResponse<PublicEmailCredential>(
+      result,
+      201,
+      'Credential created successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Update an email credential' })
@@ -74,8 +88,16 @@ export class UsersController {
     @Param('id') id: string,
     @Body() body: UpdateEmailCredentialDTO,
   ): Promise<SuccessResponse<PublicEmailCredential>> {
-    const result = await this.usersService.updateEmailCredential(id, user.id, body);
-    return new SuccessResponse<PublicEmailCredential>(result, 200, 'Credential updated successfully');
+    const result = await this.usersService.updateEmailCredential(
+      id,
+      user.id,
+      body,
+    );
+    return new SuccessResponse<PublicEmailCredential>(
+      result,
+      200,
+      'Credential updated successfully',
+    );
   }
 
   @ApiOperation({ summary: 'Delete an email credential' })
@@ -88,10 +110,17 @@ export class UsersController {
     @Param('id') id: string,
   ): Promise<SuccessResponse<null>> {
     await this.usersService.deleteEmailCredential(id, user.id);
-    return new SuccessResponse<null>(null, 200, 'Credential deleted successfully');
+    return new SuccessResponse<null>(
+      null,
+      200,
+      'Credential deleted successfully',
+    );
   }
 
-  @ApiOperation({ summary: 'Request a password change code — sends 6-digit code to registered email' })
+  @ApiOperation({
+    summary:
+      'Request a password change code — sends 6-digit code to registered email',
+  })
   @ApiResponse({ status: 200, description: 'Code sent to email' })
   @HttpCode(HttpStatus.OK)
   @Post('me/request-password-change')
@@ -99,13 +128,20 @@ export class UsersController {
     @CurrentUser() user: AuthTokenPayload,
   ): Promise<SuccessResponse<null>> {
     await this.usersService.requestPasswordChange(user.id);
-    return new SuccessResponse<null>(null, 200, 'Password change code sent to your email');
+    return new SuccessResponse<null>(
+      null,
+      200,
+      'Password change code sent to your email',
+    );
   }
 
   @ApiOperation({ summary: 'Change password using the code received by email' })
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
   @ApiResponse({ status: 400, description: 'Invalid or expired code' })
-  @ApiResponse({ status: 403, description: 'Cannot change another user\'s password' })
+  @ApiResponse({
+    status: 403,
+    description: "Cannot change another user's password",
+  })
   @HttpCode(HttpStatus.OK)
   @Patch(':userId/password')
   async changePassword(
@@ -113,7 +149,16 @@ export class UsersController {
     @Param('userId') userId: string,
     @Body() body: ChangePasswordDTO,
   ): Promise<SuccessResponse<null>> {
-    await this.usersService.changePassword(requester.id, userId, body.code, body.new_password);
-    return new SuccessResponse<null>(null, 200, 'Password changed successfully');
+    await this.usersService.changePassword(
+      requester.id,
+      userId,
+      body.code,
+      body.new_password,
+    );
+    return new SuccessResponse<null>(
+      null,
+      200,
+      'Password changed successfully',
+    );
   }
 }
