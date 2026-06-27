@@ -10,7 +10,8 @@ import {
   ValidateTokenUseCase,
   type ValidatedToken,
 } from '@domain/use-cases/auth/validate-token.use-case';
-import { AuthRepository } from '@infrastructure/repositories/auth.repository';
+import { UsersRepository } from '@infrastructure/repositories/users.repository';
+import { TokenService } from '@infrastructure/services/token.service';
 import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
 import { TokenCacheRepository } from '@infrastructure/repositories/token-cache.repository';
@@ -21,11 +22,12 @@ import { User } from '@domain/entities/User.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    private authRepository: AuthRepository,
-    private hashRepository: HashRepository,
-    private emailRepository: MailRepository,
-    private emailPublisher: EmailPublisher,
-    private tokenCacheRepository: TokenCacheRepository,
+    private readonly usersRepository: UsersRepository,
+    private readonly tokenService: TokenService,
+    private readonly hashRepository: HashRepository,
+    private readonly emailRepository: MailRepository,
+    private readonly emailPublisher: EmailPublisher,
+    private readonly tokenCacheRepository: TokenCacheRepository,
   ) {}
 
   async signUp(data: {
@@ -34,13 +36,13 @@ export class AuthService {
     password: string;
   }): Promise<User> {
     const useCase = new CreateUserUseCase(
-      this.authRepository,
+      this.usersRepository,
       this.hashRepository,
     );
     const user = await useCase.execute(data);
 
     const confirmationToken =
-      await this.authRepository.generateEmailConfirmationToken(user.email);
+      await this.tokenService.generateEmailConfirmationToken(user.email);
     const baseUrl = process.env.APP_URL || 'http://localhost:3000';
     const confirmationUrl = `${baseUrl}/auth/confirm?token=${confirmationToken}`;
 
@@ -59,25 +61,32 @@ export class AuthService {
 
   async login(data: { email: string; password: string }): Promise<AuthLogin> {
     const useCase = new LoginUserUseCase(
-      this.authRepository,
+      this.usersRepository,
+      this.tokenService,
       this.hashRepository,
     );
     return useCase.execute(data);
   }
 
   async refreshToken(refreshToken: string): Promise<AuthTokens> {
-    const useCase = new RefreshTokenUseCase(this.authRepository);
+    const useCase = new RefreshTokenUseCase(
+      this.tokenService,
+      this.usersRepository,
+    );
     return useCase.execute(refreshToken);
   }
 
   async activate(token: string): Promise<User> {
-    const useCase = new ActiveUserUseCase(this.authRepository);
+    const useCase = new ActiveUserUseCase(
+      this.tokenService,
+      this.usersRepository,
+    );
     return useCase.execute(token);
   }
 
   async forgotPassword(email: string): Promise<void> {
     const useCase = new ForgotPasswordUseCase(
-      this.authRepository,
+      this.usersRepository,
       this.hashRepository,
     );
     const result = await useCase.execute(email);
@@ -97,7 +106,8 @@ export class AuthService {
 
   async verifyResetCode(email: string, code: string): Promise<string> {
     const useCase = new ValidateResetCodeUseCase(
-      this.authRepository,
+      this.usersRepository,
+      this.tokenService,
       this.hashRepository,
     );
     return useCase.execute(email, code);
@@ -105,7 +115,8 @@ export class AuthService {
 
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {
     const useCase = new ResetPasswordUseCase(
-      this.authRepository,
+      this.tokenService,
+      this.usersRepository,
       this.hashRepository,
     );
     return useCase.execute(resetToken, newPassword);
@@ -113,7 +124,7 @@ export class AuthService {
 
   async validateToken(token: string): Promise<ValidatedToken> {
     const useCase = new ValidateTokenUseCase(
-      this.authRepository,
+      this.tokenService,
       this.tokenCacheRepository,
     );
     return useCase.execute(token);

@@ -17,4 +17,47 @@ export class UsersRepository implements IUsersRepository {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOneBy({ email });
+  }
+
+  async save(data: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
+    return this.userRepository.save(data);
+  }
+
+  async activate(email: string): Promise<User> {
+    const user = await this.userRepository.findOneByOrFail({ email });
+    if (!user.is_active) {
+      user.is_active = true;
+      await this.userRepository.save(user);
+    }
+    return user;
+  }
+
+  async saveResetCode(
+    userId: string,
+    hashedCode: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await this.userRepository.update(userId, {
+      reset_password_code: hashedCode,
+      reset_password_expires_at: expiresAt,
+    });
+  }
+
+  async clearResetCode(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      reset_password_code: null,
+      reset_password_expires_at: null,
+    });
+  }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<void> {
+    await this.userRepository.update(userId, { password: hashedPassword });
+  }
 }

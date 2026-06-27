@@ -1,12 +1,16 @@
 import { User } from '@domain/entities/User.entity';
-import { IAuth } from '@domain/ports/IAuth.interface';
+import type { ITokenService } from '@domain/ports/ITokenService.interface';
+import type { IUsersRepository } from '@domain/ports/IUsersRepository.interface';
 
 export class ActiveUserUseCase {
-  constructor(private authRepository: IAuth) {}
+  constructor(
+    private readonly tokenService: ITokenService,
+    private readonly usersRepository: IUsersRepository,
+  ) {}
 
   async execute(token: string): Promise<User> {
     const { email } =
-      await this.authRepository.verifyEmailConfirmationToken(token);
-    return this.authRepository.activate(email);
+      await this.tokenService.verifyEmailConfirmationToken(token);
+    return this.usersRepository.activate(email);
   }
 }

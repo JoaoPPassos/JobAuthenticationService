@@ -1,18 +1,19 @@
-import { IAuth } from '@domain/ports/IAuth.interface';
-import { IHashService } from '@domain/ports/IHashService.interface';
+import type { ITokenService } from '@domain/ports/ITokenService.interface';
+import type { IUsersRepository } from '@domain/ports/IUsersRepository.interface';
+import type { IHashService } from '@domain/ports/IHashService.interface';
 
 export class ResetPasswordUseCase {
   constructor(
-    private authRepository: IAuth,
-    private hashService: IHashService,
+    private readonly tokenService: ITokenService,
+    private readonly usersRepository: IUsersRepository,
+    private readonly hashService: IHashService,
   ) {}
 
   async execute(resetToken: string, newPassword: string): Promise<void> {
-    const payload =
-      await this.authRepository.verifyPasswordResetToken(resetToken);
+    const payload = await this.tokenService.verifyPasswordResetToken(resetToken);
     const hashedPassword = await this.hashService.hash(newPassword);
 
-    await this.authRepository.updatePassword(payload.sub, hashedPassword);
-    await this.authRepository.clearResetCode(payload.sub);
+    await this.usersRepository.updatePassword(payload.sub, hashedPassword);
+    await this.usersRepository.clearResetCode(payload.sub);
   }
 }

@@ -7,7 +7,6 @@ import { User } from '@domain/entities/User.entity';
 import { EmailCredential } from '@domain/entities/EmailCredential.entity';
 import { UsersRepository } from '@infrastructure/repositories/users.repository';
 import { EmailCredentialRepository } from '@infrastructure/repositories/email-credential.repository';
-import { AuthRepository } from '@infrastructure/repositories/auth.repository';
 import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
 import { EncryptionService } from '@infrastructure/services/encryption.service';
@@ -20,7 +19,6 @@ import { RabbitmqModule } from '@infrastructure/messaging/rabbitmq.module';
     UsersService,
     UsersRepository,
     EmailCredentialRepository,
-    AuthRepository,
     HashRepository,
     MailRepository,
     EncryptionService,

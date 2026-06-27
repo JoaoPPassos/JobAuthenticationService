@@ -1,6 +1,5 @@
-import type { IAuth } from '@domain/ports/IAuth.interface';
-import type { IHashService } from '@domain/ports/IHashService.interface';
 import type { IUsersRepository } from '@domain/ports/IUsersRepository.interface';
+import type { IHashService } from '@domain/ports/IHashService.interface';
 import {
   BadRequestException,
   ForbiddenException,
@@ -9,7 +8,6 @@ import {
 export class ChangePasswordUseCase {
   constructor(
     private readonly usersRepo: IUsersRepository,
-    private readonly authRepo: IAuth,
     private readonly hashService: IHashService,
   ) {}
 
@@ -44,7 +42,7 @@ export class ChangePasswordUseCase {
     }
 
     const hashedPassword = await this.hashService.hash(newPassword);
-    await this.authRepo.updatePassword(targetUserId, hashedPassword);
-    await this.authRepo.clearResetCode(targetUserId);
+    await this.usersRepo.updatePassword(targetUserId, hashedPassword);
+    await this.usersRepo.clearResetCode(targetUserId);
   }
 }

@@ -23,7 +23,7 @@ import { ChangePasswordDTO } from '../dto/change-password.dto';
 import { JwtAuthGuard } from '@shared/guards/jwt-auth.guard';
 import { CurrentUser } from '@shared/decorators/current-user.decorator';
 import { SuccessResponse } from '@shared/response/success.response';
-import type { AuthTokenPayload } from '@domain/ports/IAuth.interface';
+import type { AuthTokenPayload } from '@domain/ports/ITokenService.interface';
 import type { MeResponse } from '@domain/use-cases/users/get-me.use-case';
 import type { PublicEmailCredential } from '@domain/ports/IEmailCredentialRepository.interface';
 

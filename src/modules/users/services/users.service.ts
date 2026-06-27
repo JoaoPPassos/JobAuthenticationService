@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '@infrastructure/repositories/users.repository';
 import { EmailCredentialRepository } from '@infrastructure/repositories/email-credential.repository';
-import { AuthRepository } from '@infrastructure/repositories/auth.repository';
 import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
 import { EmailPublisher } from '@infrastructure/messaging/email.publisher';
@@ -23,7 +22,6 @@ export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly credentialRepository: EmailCredentialRepository,
-    private readonly authRepository: AuthRepository,
     private readonly hashRepository: HashRepository,
     private readonly mailRepository: MailRepository,
     private readonly emailPublisher: EmailPublisher,
@@ -74,7 +72,6 @@ export class UsersService {
   async requestPasswordChange(userId: string): Promise<void> {
     const useCase = new RequestPasswordChangeUseCase(
       this.usersRepository,
-      this.authRepository,
       this.hashRepository,
     );
     const result = await useCase.execute(userId);
@@ -98,7 +95,6 @@ export class UsersService {
   ): Promise<void> {
     const useCase = new ChangePasswordUseCase(
       this.usersRepository,
-      this.authRepository,
       this.hashRepository,
     );
     return useCase.execute(requesterId, targetUserId, code, newPassword);

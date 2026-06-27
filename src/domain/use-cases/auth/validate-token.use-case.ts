@@ -1,7 +1,7 @@
-import {
-  type AuthTokenPayload,
-  type IAuth,
-} from '@domain/ports/IAuth.interface';
+import type {
+  AuthTokenPayload,
+  ITokenService,
+} from '@domain/ports/ITokenService.interface';
 import { type ITokenCache } from '@domain/ports/ITokenCache.interface';
 
 const CACHE_PREFIX = 'access_token:';
@@ -13,7 +13,7 @@ export type ValidatedToken = {
 
 export class ValidateTokenUseCase {
   constructor(
-    private readonly auth: IAuth,
+    private readonly tokenService: ITokenService,
     private readonly cache: ITokenCache,
   ) {}
 
@@ -25,7 +25,7 @@ export class ValidateTokenUseCase {
       return { token, user: JSON.parse(cached) as AuthTokenPayload };
     }
 
-    const { payload, expiresAt } = await this.auth.verifyAccessToken(token);
+    const { payload, expiresAt } = await this.tokenService.verifyAccessToken(token);
 
     const ttl = expiresAt - Math.floor(Date.now() / 1000);
     if (ttl > 0) {

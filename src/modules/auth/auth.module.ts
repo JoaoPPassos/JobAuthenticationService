@@ -4,7 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { User } from '@domain/entities/User.entity';
-import { AuthRepository } from '@infrastructure/repositories/auth.repository';
+import { UsersRepository } from '@infrastructure/repositories/users.repository';
+import { TokenService } from '@infrastructure/services/token.service';
 import { HashRepository } from '@infrastructure/repositories/hash.repository';
 import { MailRepository } from '@infrastructure/repositories/mail.repository';
 import { TokenCacheRepository } from '@infrastructure/repositories/token-cache.repository';
@@ -15,7 +16,8 @@ import { RabbitmqModule } from '@infrastructure/messaging/rabbitmq.module';
   imports: [TypeOrmModule.forFeature([User]), RabbitmqModule],
   providers: [
     AuthService,
-    AuthRepository,
+    UsersRepository,
+    TokenService,
     HashRepository,
     MailRepository,
     JwtService,
